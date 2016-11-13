@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include <Wire.h>
 #include <skywriter.h>
 
@@ -26,6 +27,9 @@ unsigned long before = 0;
 // Was xyz called the previous iteration?
 bool xyz_called = false;
 
+// last values r, g, b
+double r, g, b;
+
 // Current mode
 mode current_mode;
 
@@ -37,8 +41,8 @@ void setup() {
   Skywriter.onAirwheel(airwheel);
   Skywriter.onGesture(gesture);
   Skywriter.onXYZ(xyz);
-  current_mode = wait;
   ms_first_xyz = 0;
+  load();
 }
 
 void loop() {
@@ -64,6 +68,8 @@ void xyz(unsigned int x, unsigned int y, unsigned int z){
     Serial.println(buf);
     sprintf(buf, "%05u:%05u:%05u gest:%02u touch:%02u", x/257, y/257, z/257, Skywriter.last_gesture, Skywriter.last_touch);
     Serial.println(buf);
+
+    // Calculate color delta
   }
 }
 
@@ -104,8 +110,46 @@ void check_xyz_called()
   {
     ms = 0;
     current_mode = wait;
+    save();
   }
   // reset xyz_called and ms
   xyz_called = false;
+}
+
+// Load the last state and values from EEPROM
+void load()
+{
+  // Load mode
+  current_mode = (mode)int(EEPROM.read(0));
+
+  // Load last r, g, b values
+  r = int(EEPROM.read(1));
+  g = int(EEPROM.read(2));
+  b = int(EEPROM.read(3));
+
+  // Load array index of predefined colors
+  // Continue...
+}
+
+// Save actual state and values to EEPROM
+void save()
+{
+  // Save Values only if they changed
+  if (int(EEPROM.read(0)) != current_mode)
+  {
+    EEPROM.write(0, current_mode);
+  }
+  if (int(EEPROM.read(1)) != r)
+  {
+    EEPROM.write(1, r);
+  }
+  if (int(EEPROM.read(2)) != g)
+  {
+    EEPROM.write(2, g);
+  }
+  if (int(EEPROM.read(3)) != b)
+  {
+    EEPROM.write(3, b);
+  }
 }
 
