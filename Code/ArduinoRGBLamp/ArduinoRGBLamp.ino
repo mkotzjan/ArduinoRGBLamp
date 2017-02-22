@@ -127,6 +127,7 @@ void check_xyz_called()
       ms = millis();
     } else if (ms + trigger <= millis())
     {
+      blink_twice();
       current_mode = xyz_color;
     }
   } else if (!xyz_called)
@@ -203,5 +204,17 @@ double hue2rgb(double p, double q, double t) {
   if(t < 1/2.0) return q;
   if(t < 2/3.0) return p + (q - p) * (2/3.0 - t) * 6;
   return p;
+}
+
+void blink_twice() {
+  for (int i = 0; i < 4; ++i) {
+    r = 255 - r;
+    g = 255 - g;
+    b = 255 - b;
+    analogWrite(pin_r, r);
+    analogWrite(pin_g, g);
+    analogWrite(pin_b, b);
+    if (i != 3) delay(80);
+  }
 }
 
