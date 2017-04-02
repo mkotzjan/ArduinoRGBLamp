@@ -40,21 +40,18 @@ int pin_b = 11;
 mode current_mode;
 
 void setup() {
-  // Serial.begin(9600);
-  // Serial.println("Hello world!"); 
+  Serial.begin(9600);
+  Serial.println("Hello world!"); 
+  ms_first_xyz = 0;
+  load();
   Skywriter.begin(12, 13);
   Skywriter.onTouch(touch);
   Skywriter.onAirwheel(airwheel);
   Skywriter.onGesture(gesture);
   Skywriter.onXYZ(xyz);
-  ms_first_xyz = 0;
-  //load();
   // Serial.println(r);
   // Serial.println(g);
   // Serial.println(b);
-  analogWrite(pin_r, 255);
-  analogWrite(pin_g, 255);
-  analogWrite(pin_b, 255);
 }
 
 void loop() {
@@ -89,7 +86,7 @@ void xyz(unsigned int x, unsigned int y, unsigned int z){
     r = r + (r_delta * delta);
     g = g + (g_delta * delta);
     b = b + (b_delta * delta);
-    // Serial.println(String(r) + " " + String(g) + " " + String(b));
+    Serial.println(String(r) + " " + String(g) + " " + String(b));
     analogWrite(pin_r, r);
     analogWrite(pin_g, g);
     analogWrite(pin_b, b);
@@ -134,6 +131,7 @@ void check_xyz_called()
   {
     ms = 0;
     current_mode = wait;
+    // Call save if changing is over
     save();
   }
   // reset xyz_called and ms
